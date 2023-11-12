@@ -1,0 +1,39 @@
+{% extends "base_bootstrap.html" %}
+
+{% block content %}
+    <h1>Edit your task:</h1>
+    <form action="{% url 'task_edit' task.id %}" method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ task.title }}">
+            {% if form.errors.title %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.errors.title }}
+                </div>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            <label for="status" class="form-label">Status</label>
+            <select class="form-select" id="status" name="status">
+                <option value="Pending" {% if task.status == "Pending" %}selected{% endif %}>Pending</option>
+                <option value="In Progress" {% if task.status == "In Progress" %}selected{% endif %}>In Progress</option>
+                <option value="Completed" {% if task.status == "Completed" %}selected{% endif %}>Completed</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <input type="text" class="form-control" id="description" name="description" value="{{ task.description }}">
+            {% if form.errors.description %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.errors.description }}
+                </div>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary" value="Save">Submit</button>
+    </form>
+    
+    
+    <a href="{% url 'task_list_create' %}">Back To List</a>
+    
+{% endblock %}

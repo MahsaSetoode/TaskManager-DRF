@@ -1,0 +1,27 @@
+{% extends "base_bootstrap.html" %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="display-4">Welcome to the Task Manager</h1>
+        <p class="lead">
+            {% if user.is_authenticated %}
+                Authenticated as
+                <ul class="list-unstyled">
+                    <li><strong>Name:</strong> {{ user }}</li>
+                    <li><strong>Email:</strong> {{ user.email }}</li>
+                    <li><strong>Id:</strong> {{ user.id }}</li>
+                </ul>
+                <p>You can: <a href="/accounts/logout" class="btn btn-primary">Logout</a></p>
+            {% else %}
+                <p>You can <a href="/accounts/login" class="btn btn-primary">Login</a> if you like.</p>
+            {% endif %}
+        </p>
+
+        <p>The source code of this project is available at
+            <a href="https://gitlab.com/MahsaSetoode/taskmanager-drf.git" target="_blank">gitlab</a>.
+        </p>
+        <p>Start using the task manager
+            <a href="{% url 'task_list_create' %}">here</a>.
+        </p>
+    </div>
+{% endblock content %}

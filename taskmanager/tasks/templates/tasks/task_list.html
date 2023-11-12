@@ -1,0 +1,91 @@
+
+{% extends "base_bootstrap.html" %}
+
+{% block content %}
+  <h1>Task List</h1>
+
+  <!-- search field -->
+  <div style="float:right">
+    <form>
+        <input type="text" placeholder="Search" name="search"
+        {% if search %} value="{{ search }}" {% endif %}
+        >
+        <!-- search icon for button -->
+        <button type="submit"><i class="fa fa-search"></i></button>
+      <a href="{% url 'task_list_create' %}"><i class="fa fa-undo"></i></a>
+    </form>
+  </div>
+  {% if task_list %}
+  <ol class="list-group list-group-numbered">
+    {% for task in task_list %}
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+           <div class="fw-bold">
+            <a href="{% url 'task_details' task.id %}">{{ task.title }}</a>
+            </div>
+            {{ task.description }} 
+            <div>
+              {% if task.owner == user.id %}
+              (<a  href="{% url 'task_edit' task.id %}">Edit</a> |
+              <a  href="{% url 'task_delete' task.id %}" >
+                Delete</a>)
+              {% endif %}
+            </div>
+        </div>
+        <span class="badge bg-primary rounded-pill">{{ task.status }}</span>
+      </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+    {% if search %}
+        <p>There are no task that match with your search.</p>
+    {% else %}
+        <p>There are no task in the database.</p>
+    {% endif %}
+  {% endif %}
+  <div style="margin-top: 20px;"></div>
+    {% if user.is_authenticated %}
+        <!-- <a href="{% url 'task_list_create' %}">Create a new task</a>| -->
+        {% include 'tasks/task_create.html' %}
+        <a href="{% url 'logout' %}?next={% url 'task_list_create' %}">Logout</a>
+    {% else %}
+        <a href="{% url 'login' %}?next={% url 'task_list_create' %}">Login</a>
+    {% endif %}
+
+    <!-- <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          var deleteLinks = document.querySelectorAll('.delete-link');
+          deleteLinks.forEach(function(link) {
+              link.addEventListener('click', function(event) {
+                  event.preventDefault();
+                  // Extract data attributes
+                  var csrfToken = this.getAttribute('data-csrf');
+                  var url = this.getAttribute('href');
+                  console.log(url);
+                  if (url != null) {
+                  // Make AJAX request
+                  // fetch( {  method: "DELETE"}).then(response => {  console.log(response.status); });
+
+                  fetch(url, {
+                      method: 'DELETE',
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'X-CSRFToken': csrfToken
+                      },
+                  }).then(response => {
+                    console.log(response.status);
+                      // if (!response.ok) {
+                      //     throw new Error('Network response was not ok');
+                      // }
+                      // Handle success, e.g., redirect or update the UI
+                      // window.location.reload(); // Example: Reload the page
+                  });
+                } else {
+                console.error('Task ID is null');
+                }
+              });
+          });
+      });
+      </script> -->
+      
+{% endblock %}

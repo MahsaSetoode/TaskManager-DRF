@@ -1,0 +1,22 @@
+{% extends "base_bootstrap.html" %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1>Task Detail</h1>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h2>{{ task.title }}</h2>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ task.description }}</p>
+                <p class="card-text"><strong>Status:</strong> {{ task.status }}</p>
+                <p class="card-text"><strong>Status:</strong> {{ owner }}</p>
+                <p class="card-text"><strong>Created At:</strong> {{ task.created_at }}</p>
+                <p class="card-text"><strong>Updated At:</strong> {{ task.updated_at }}</p>
+            </div>
+        </div>
+
+        <a href="{% url 'task_list_create' %}" class="btn btn-primary mt-4">Back to List</a>
+    </div>
+{% endblock content %}

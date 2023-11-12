@@ -1,0 +1,44 @@
+{% extends "base_bootstrap.html" %}
+{% block content %}
+
+<p>Are you sure you want to delete the task: {{ task.title }}?</p>
+
+<form action="{% url 'task_delete' task.id %}" method="POST">
+  {% csrf_token %}
+  <input  data-task-id="{{ task.id }}" type="submit" value="Yes, delete.">
+  <a href="{% url 'task_list_create' %}" class="btn btn-secondary">Cancel</a>
+</form>
+
+<!-- <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var deleteLinks = document.querySelectorAll('.delete-link');
+        deleteLinks.forEach(function(link) {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                // Extract data attributes
+                var csrfToken = this.getAttribute('data-csrf');
+                var taskId = this.getAttribute('data-task-id');
+                console.log(url);
+                if (url != null) {
+                fetch(`/tasks/delete/${taskId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                }).then(response => {
+                  console.log(response.status);
+                    // if (!response.ok) {
+                    //     throw new Error('Network response was not ok');
+                    // }
+                    // Handle success, e.g., redirect or update the UI
+                    // window.location.reload(); // Example: Reload the page
+                });
+              } else {
+              console.error('Task ID is null');
+              }
+            });
+        });
+    });
+    </script> -->
+{% endblock %}
