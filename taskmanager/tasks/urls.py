@@ -4,8 +4,11 @@ from . import views
 # app_name='tasks'
 urlpatterns = [
     path('', views.TaskList.as_view(), name='task_list_create'),
-    # path('create/', views.TaskCreate.as_view(), name='task_create'),
     path('details/<int:pk>/', views.TaskDetail.as_view(), name='task_details'),
     path('edit/<int:pk>/', views.TaskEdit.as_view(), name='task_edit'),
     path('delete/<int:pk>/', views.TaskDelete.as_view(), name='task_delete'),
+
+    # api endpoints
+    path('api/', views.TaskListCreateApi.as_view(), name='task_list_create_api'),
+    path('api/details/<int:pk>/', views.TaskDetailApi.as_view(), name='task_details_api'),
 ]
