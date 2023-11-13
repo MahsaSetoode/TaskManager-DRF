@@ -26,8 +26,6 @@ class TaskList(APIView):
             tasks = Task.objects.filter(Q(title__icontains=search_item) | Q(description__icontains=search_item))
         else :
             tasks = Task.objects.all()
-        for task in tasks:
-            print(task.owner.id)
         
         return Response({'task_list': tasks, 'search':search_item})
         # return render(request, 'tasks/task_list.html', {'task_list': tasks})
@@ -50,7 +48,10 @@ class TaskDetail(APIView):
     template_name = 'tasks/task_detail.html'
     # task detail
     def get(self, request, pk):
-        task = get_object_or_404(Task, pk=pk)
+        try:
+            task = Task.objects.get(pk=pk)
+        except Task.DoesNotExist:
+            return redirect('task_list_create')
         return Response({'task': task, 'owner': task.owner})
     
 
@@ -62,7 +63,10 @@ class TaskEdit(LoginRequiredMixin, APIView):
     template_name = 'tasks/task_form.html'
     
     def get(self, request, pk):
-        task = get_object_or_404(Task, pk=pk)
+        try:
+            task = Task.objects.get(pk=pk)
+        except Task.DoesNotExist:
+            return redirect('task_list_create')
         if task.owner != request.user:
             return redirect('task_list_create')
         return Response({'task': task})
@@ -81,7 +85,10 @@ class TaskDelete(LoginRequiredMixin, APIView):
     template_name = 'tasks/task_delete_confirm.html'
     
     def get(self, request, pk):
-        task = get_object_or_404(Task, pk=pk)
+        try:
+            task = Task.objects.get(pk=pk)
+        except Task.DoesNotExist:
+            return redirect('task_list_create')
         if task.owner != request.user:
             return redirect('task_list_create')
         return Response({'task': task})
