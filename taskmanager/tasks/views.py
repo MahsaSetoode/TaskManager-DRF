@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import HttpResponse
 from django.db.models import Q
-# from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework.decorators import api_view
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
@@ -13,9 +13,8 @@ from .serializers import TaskSerializer, CreateTaskSerializer, EditTaskSerialize
 from .forms import TaskCreateForm, TaskEditForm
 
 
+
 class TaskList(APIView):
-    # add permission to check if user is authenticated
-    # permission_classes = [permissions.IsAuthenticated]
 
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'tasks/task_list.html'
@@ -56,15 +55,6 @@ class TaskDetail(APIView):
         serializer = TaskSerializer(task)
         return Response({'task': serializer.data, 'owner': task.owner})
     
-    # deserialize and update
-    # def post(self, request, pk):
-    #     task = get_object_or_404(Task, pk=pk)
-    #     serializer = EditTaskSerializer(task, data=request.data,partial = True)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-    #     return Response(serializer.data)
-    
-    
 
 
 class TaskEdit(APIView):
@@ -103,11 +93,8 @@ class TaskDelete(APIView):
         return Response({'task': serializer.data})
     
     def post(self, request, pk):
-        print("hi")
         task = get_object_or_404(Task, pk=pk)
-        print(task)
         task.delete()
-        # return Response(status=status.HTTP_204_NO_CONTENT)
         return redirect('task_list_create')
     
     def get_queryset(self):
@@ -117,49 +104,46 @@ class TaskDelete(APIView):
 
 
 # using serializer and django rest 
-# class TaskList(APIView):
-#     # add permission to check if user is authenticated
-#     # permission_classes = [permissions.IsAuthenticated]
-#     renderer_classes = [TemplateHTMLRenderer]
-#     template_name = 'tasks/task_list.html'
-#     # tasks list
-#     def get(self, request):
-#         # handles searching
-#         search_item =  request.GET.get("search", False)
-#         if search_item :
-#             # if user searched anything
-#             # Q => query expression
-#             tasks = Task.objects.filter(Q(title__icontains=search_item) | Q(description__icontains=search_item))
-#         else :
-#             tasks = Task.objects.all()
-
-#         serializer = TaskSerializer(tasks, many=True, context={'request': request})
-#         return Response(serializer.data)
+class TaskListCreateApi(LoginRequiredMixin, APIView):
+  
+    # tasks list
+    def get(self, request):
+        tasks = Task.objects.all()
+        serializer = TaskSerializer(tasks, many=True, context={'request': request})
+        return Response(serializer.data)
     
-#     # create task
-#     def post(self, request):
-#         serializer = CreateTaskSerializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save(owner=self.request.user)
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    # create task
+    def post(self, request):
+        serializer = CreateTaskSerializer(data=request.data)
+        if not self.request.user.is_authenticated:
+            return Response({'detail': 'Authentication credentials were not provided.'},status=status.HTTP_401_UNAUTHORIZED)
+        # print(self.request.user)
+        # print(serializer.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(owner=self.request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-# class TaskDetail(APIView):
-#     # task detail
-#     def get(self, request, pk):
-#         task = get_object_or_404(Task, pk=pk)
-#         serializer = TaskSerializer(task)
-#         return Response(serializer.data)
+class TaskDetailApi(LoginRequiredMixin, APIView):
+    # task detail
+    def get(self, request, pk):
+        task = get_object_or_404(Task, pk=pk)
+        serializer = TaskSerializer(task)
+        return Response(serializer.data)
     
-#     # deserialize and update
-#     def post(self, request, pk):
-#         task = get_object_or_404(Task, pk=pk)
-#         serializer = EditTaskSerializer(task, data=request.data,partial = True)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         return Response(serializer.data)
+    # deserialize and update
+    def post(self, request, pk):
+        task = get_object_or_404(Task, pk=pk)
+        serializer = EditTaskSerializer(task, data=request.data,partial = True)
+        if self.request.user != task.owner:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
     
-#     def delete(self, request, pk):
-#         task = get_object_or_404(Task, pk=pk)
-#         task.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
+    def delete(self, request, pk):
+        task = get_object_or_404(Task, pk=pk)
+        if self.request.user != task.owner:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        task.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
