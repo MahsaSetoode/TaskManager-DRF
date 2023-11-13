@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'tasks',
     'debug_toolbar',
     'home',
+    'restapi',
 ]
 
 MIDDLEWARE = [
