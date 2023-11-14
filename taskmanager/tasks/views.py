@@ -28,7 +28,7 @@ class TaskList(APIView):
             tasks = Task.objects.all()
         
         return Response({'task_list': tasks, 'search':search_item})
-        # return render(request, 'tasks/task_list.html', {'task_list': tasks})
+
     
     # create task
     def post(self, request):
@@ -57,11 +57,9 @@ class TaskDetail(APIView):
 
 
 class TaskEdit(LoginRequiredMixin, APIView):
-    # add permission to check if user is authenticated
-    # permission_classes = [permissions.IsAuthenticated]
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'tasks/task_form.html'
-    
+    # redirect to edit template
     def get(self, request, pk):
         try:
             task = Task.objects.get(pk=pk)
@@ -83,7 +81,7 @@ class TaskEdit(LoginRequiredMixin, APIView):
 class TaskDelete(LoginRequiredMixin, APIView):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'tasks/task_delete_confirm.html'
-    
+    # show confirm page
     def get(self, request, pk):
         try:
             task = Task.objects.get(pk=pk)
@@ -98,7 +96,4 @@ class TaskDelete(LoginRequiredMixin, APIView):
         task.delete()
         return redirect('task_list_create')
     
-    def get_queryset(self):
-        qs = super(TaskDelete, self).get_queryset()
-        return qs.filter(owner=self.request.user)
 
