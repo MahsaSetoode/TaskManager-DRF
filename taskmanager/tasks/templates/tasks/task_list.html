@@ -46,7 +46,7 @@
   {% endif %}
   <div style="margin-top: 20px;"></div>
     {% if user.is_authenticated %}
-        <!-- <a href="{% url 'task_list_create' %}">Create a new task</a>| -->
+       
         <h1>Insert your task:</h1>
         <form action="{% url 'task_list_create' %}" method="POST">
             {% csrf_token %}
