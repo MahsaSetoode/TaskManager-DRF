@@ -32,6 +32,9 @@
                     <a class="nav-link" href="{% url 'task_list_create' %}">Create or see all tasks</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="{% url 'task_list_create_api' %}">All and create api</a>
+                </li>
+                <li class="nav-item">
                     {% if user.is_authenticated %}
                         <a class="nav-link" href="/accounts/logout" class="btn btn-primary">Logout</a>
                     {% else %}
